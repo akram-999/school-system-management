@@ -15,7 +15,6 @@ module.exports = (sequelize) => {
         key: 'id',
       }
     },
-    
     schoolId: {
         type: DataTypes.INTEGER,
         allowNull: false,
@@ -24,7 +23,6 @@ module.exports = (sequelize) => {
       key: 'id',
     },
     },
- 
     phoneNumber: {
         type: DataTypes.STRING,
         allowNull: true,
