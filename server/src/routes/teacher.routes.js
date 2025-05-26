@@ -1,5 +1,6 @@
 const teacherRouter = require("express").Router();
 const { createTeacher, getTeachers, updateTeacher, deleteTeacher } = require("../controllers/teacher.controller");
+const { authenticate, authorizeRoles } = require("../middlewares/auth.middleware");
 
 teacherRouter.use(authenticate);
 teacherRouter.post("/", authorizeRoles("ADMIN", "SCHOOL_ADMIN"), createTeacher);
