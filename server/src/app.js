@@ -18,5 +18,7 @@ app.use("/api/guards", require("./routes/guard.routes"));
 app.use("/api/students", require("./routes/student.routes"));
 app.use("/api/parents", require("./routes/parent.routes"));
 app.use("/api/drivers", require("./routes/driver.routes"));
+app.use("/api/cycles", require("./routes/cycle.routes"));
+
 
 module.exports = app;
