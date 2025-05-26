@@ -1,3 +1,6 @@
+const { PrismaClient } = require('@prisma/client');
+const prisma = new PrismaClient();
+
 exports.createAdmin = async (req, res) => {
     try {
       const { userId } = req.body;
