@@ -3,6 +3,7 @@ CREATE TYPE user_role AS ENUM ('admin', 'school_admin', 'guard', 'teacher', 'stu
 CREATE TYPE attendance_type AS ENUM ('student', 'staff');
 CREATE TYPE attendance_status AS ENUM ('present', 'absent', 'late', 'excused');
 CREATE TYPE homework_status AS ENUM ('completed', 'pending', 'late');
+CREATE TYPE gender_type AS ENUM ('male', 'female');
 
 -- USERS & AUTH
 CREATE TABLE users (
@@ -62,8 +63,14 @@ CREATE TABLE drivers (
     id SERIAL PRIMARY KEY,
     user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
     school_id INTEGER REFERENCES schools(id) ON DELETE CASCADE,
-    name VARCHAR(255) NOT NULL,
-    contact_info TEXT,
+    first_name VARCHAR(255) NOT NULL,
+    last_name VARCHAR(255) NOT NULL,
+    first_name_ar VARCHAR(255) NOT NULL,
+    last_name_ar VARCHAR(255) NOT NULL,
+    address TEXT,
+    address_ar TEXT,
+    cin VARCHAR(255),
+    phoneNumber VARCHAR(255),
     license_number VARCHAR(100)
 );
 
@@ -71,8 +78,20 @@ CREATE TABLE students (
     id SERIAL PRIMARY KEY,
     user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
     school_id INTEGER REFERENCES schools(id) ON DELETE CASCADE,
-    name VARCHAR(255) NOT NULL,
+    first_name VARCHAR(255) NOT NULL,
+    last_name VARCHAR(255) NOT NULL,
+    first_name_ar VARCHAR(255) NOT NULL,
+    last_name_ar VARCHAR(255) NOT NULL,
+    address TEXT,
+    address_ar TEXT,
+    pupilCode VARCHAR(255),
+    palaceOfBirth VARCHAR(255),
+    palaceOfBirth_ar VARCHAR(255),
+    cin VARCHAR(255),
+    phoneNumber VARCHAR(255),
+    gender gender_type NOT NULL,
     date_of_birth DATE,
+    nationality VARCHAR(255),
     enrollment_date DATE,
     class_id INTEGER REFERENCES classes(id)
 );
@@ -80,7 +99,14 @@ CREATE TABLE students (
 CREATE TABLE parents (
     id SERIAL PRIMARY KEY,
     user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
-    name VARCHAR(255) NOT NULL,
+    first_name VARCHAR(255) NOT NULL,
+    last_name VARCHAR(255) NOT NULL,
+    first_name_ar VARCHAR(255) NOT NULL,
+    last_name_ar VARCHAR(255) NOT NULL,
+    address TEXT,
+    address_ar TEXT,
+    cin VARCHAR(255),
+    phoneNumber VARCHAR(255),
     contact_info TEXT
 );
 
@@ -166,10 +192,17 @@ CREATE TABLE transportation (
 
 CREATE TABLE accompaniments (
     id SERIAL PRIMARY KEY,
-    transportation_id INTEGER REFERENCES transportation(id) ON DELETE CASCADE,
-    guard_id INTEGER REFERENCES guards(id) ON DELETE CASCADE,
-    date DATE,
-    notes TEXT
+    user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+    school_id INTEGER REFERENCES schools(id) ON DELETE CASCADE,
+    first_name VARCHAR(255) NOT NULL,
+    last_name VARCHAR(255) NOT NULL,
+    first_name_ar VARCHAR(255) NOT NULL,
+    last_name_ar VARCHAR(255) NOT NULL,
+    address TEXT,
+    address_ar TEXT,
+    cin VARCHAR(255),
+    phoneNumber VARCHAR(255),
+    transportation_id INTEGER REFERENCES transportation(id) ON DELETE CASCADE
 );
 
 -- ACADEMIC TRACKING
