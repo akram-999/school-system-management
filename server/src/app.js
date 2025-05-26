@@ -16,5 +16,7 @@ app.use("/api/school-admins", require("./routes/schoolAdmin.routes"));
 app.use("/api/teachers", require("./routes/teacher.routes"));
 app.use("/api/guards", require("./routes/guard.routes"));
 app.use("/api/students", require("./routes/student.routes"));
+app.use("/api/parents", require("./routes/parent.routes"));
+
 
 module.exports = app;
