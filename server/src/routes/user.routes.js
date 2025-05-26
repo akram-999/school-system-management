@@ -1,5 +1,6 @@
 const userRouter = require("express").Router();
-const { createUser, getUsers, updateUser, deleteUser } = require("../controllers/userController");
+const { createUser, getUsers, updateUser, deleteUser } = require("../controllers/user.controller");
+const { authenticate, authorizeRoles } = require("../middlewares/auth.middleware");
 
 userRouter.use(authenticate);
 userRouter.post("/", authorizeRoles("ADMIN"), createUser);
