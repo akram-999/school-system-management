@@ -1,0 +1,226 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  ADMIN
+  SCHOOL_ADMIN
+  GUARD
+  TEACHER
+  STUDENT
+  PARENT
+  DRIVER
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String
+  role      Role
+  createdAt DateTime @default(now())
+
+  // Role-specific relations
+  admin             Admin?
+  schoolAdmin       SchoolAdmin?
+  teacher           Teacher?
+  guard             Guard?
+  driver            Driver?
+  student           Student?
+  parent            Parent?
+}
+
+model School {
+  id          String          @id @default(uuid())
+  name        String
+  address     String
+  createdAt   DateTime        @default(now())
+
+  administrators SchoolAdmin[]
+  teachers        Teacher[]
+  guards          Guard[]
+  drivers         Driver[]
+  students        Student[]
+  classes         Class[]
+  transportations Transportation[]
+  activities      Activity[]
+}
+
+model Admin {
+  id       String @id
+  user     User   @relation(fields: [id], references: [id])
+}
+
+model SchoolAdmin {
+  id        String @id
+  user      User   @relation(fields: [id], references: [id])
+  schoolId  String
+  school    School @relation(fields: [schoolId], references: [id])
+}
+
+model Teacher {
+  id        String  @id
+  user      User    @relation(fields: [id], references: [id])
+  schoolId  String
+  school    School  @relation(fields: [schoolId], references: [id])
+
+  classes   Class[]       @relation("TeacherClasses")
+  schedules Schedule[]
+  attendances Attendance[]
+  exams      Exam[]
+}
+
+model Guard {
+  id        String  @id
+  user      User    @relation(fields: [id], references: [id])
+  schoolId  String
+  school    School  @relation(fields: [schoolId], references: [id])
+
+  attendances Attendance[]
+}
+
+model Driver {
+  id        String  @id
+  user      User    @relation(fields: [id], references: [id])
+  schoolId  String
+  school    School  @relation(fields: [schoolId], references: [id])
+
+  transportations Transportation[]
+}
+
+model Parent {
+  id        String    @id
+  user      User      @relation(fields: [id], references: [id])
+  children  Student[] @relation("ParentChildren")
+}
+
+model Student {
+  id        String  @id
+  user      User    @relation(fields: [id], references: [id])
+  schoolId  String
+  school    School  @relation(fields: [schoolId], references: [id])
+
+  parentId  String?
+  parent    Parent? @relation(fields: [parentId], references: [id], name: "ParentChildren")
+
+  classId   String?
+  class     Class?  @relation(fields: [classId], references: [id])
+
+  schedules Schedule[]
+  attendances Attendance[]
+  homeworks   Homework[]
+  exams       ExamResult[]
+}
+
+model Class {
+  id        String   @id @default(uuid())
+  name      String
+  schoolId  String
+  school    School   @relation(fields: [schoolId], references: [id])
+
+  teacher   Teacher[] @relation("TeacherClasses")
+  students  Student[]
+  subjects  Subject[]
+}
+
+model Subject {
+  id        String   @id @default(uuid())
+  name      String
+  classId   String
+  class     Class    @relation(fields: [classId], references: [id])
+}
+
+model Schedule {
+  id          String   @id @default(uuid())
+  date        DateTime
+  subject     String
+  startTime   DateTime
+  endTime     DateTime
+
+  studentId   String?
+  student     Student? @relation(fields: [studentId], references: [id])
+
+  teacherId   String?
+  teacher     Teacher? @relation(fields: [teacherId], references: [id])
+}
+
+model Attendance {
+  id         String   @id @default(uuid())
+  date       DateTime
+  status     String   // Present, Absent, Late, etc.
+  studentId  String?
+  student    Student? @relation(fields: [studentId], references: [id])
+  teacherId  String?
+  teacher    Teacher? @relation(fields: [teacherId], references: [id])
+  guardId    String?
+  guard      Guard?   @relation(fields: [guardId], references: [id])
+}
+
+model Transportation {
+  id        String   @id @default(uuid())
+  route     String
+  schoolId  String
+  school    School   @relation(fields: [schoolId], references: [id])
+  driverId  String
+  driver    Driver   @relation(fields: [driverId], references: [id])
+  accompaniments Accompaniment[]
+}
+
+model Accompaniment {
+  id              String   @id @default(uuid())
+  name            String
+  transportationId String
+  transportation   Transportation @relation(fields: [transportationId], references: [id])
+}
+
+model Exam {
+  id        String   @id @default(uuid())
+  subject   String
+  date      DateTime
+  teacherId String
+  teacher   Teacher   @relation(fields: [teacherId], references: [id])
+  results   ExamResult[]
+}
+
+model ExamResult {
+  id        String   @id @default(uuid())
+  grade     Float
+  studentId String
+  examId    String
+
+  student   Student @relation(fields: [studentId], references: [id])
+  exam      Exam    @relation(fields: [examId], references: [id])
+}
+
+model Homework {
+  id          String   @id @default(uuid())
+  title       String
+  description String
+  dueDate     DateTime
+  completed   Boolean  @default(false)
+  studentId   String
+  student     Student  @relation(fields: [studentId], references: [id])
+}
+
+model Activity {
+  id        String   @id @default(uuid())
+  name      String
+  date      DateTime
+  location  String
+  schoolId  String
+  school    School @relation(fields: [schoolId], references: [id])
+}
+
+model TextbookProgress {
+  id        String   @id @default(uuid())
+  subject   String
+  progress  Int      // percentage
+  classId   String
+  class     Class    @relation(fields: [classId], references: [id])
+  teacherId String
+  teacher   Teacher  @relation(fields: [teacherId], references: [id])
+}
