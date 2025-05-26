@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
-const { createSchool, getSchools, updateSchool, deleteSchool } = require("../controllers/schoolController");
-const { authenticate, authorizeRoles } = require("../middleware/auth");
+const { createSchool, getSchools, updateSchool, deleteSchool } = require("../controllers/school.controller");
+const { authenticate, authorizeRoles } = require("../middlewares/auth.middleware");
 
 router.use(authenticate);
 router.post("/", authorizeRoles("ADMIN"), createSchool);
