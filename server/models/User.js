@@ -31,12 +31,6 @@ module.exports = (sequelize) => {
                 isEmail: true,
             }
         },
-        phone: {
-          type: DataTypes.STRING,
-        },
-        address:{
-           type: DataTypes.STRING,  
-        }
      
     }, {
    
