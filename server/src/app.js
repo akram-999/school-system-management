@@ -28,5 +28,6 @@ app.use("/api/exam-results", require("./routes/examResult.routes"));
 app.use("/api/homework", require("./routes/homework.routes"));
 app.use("/api/transportations", require("./routes/transportation.routes"));
 app.use("/api/transportations/assignments", require("./routes/transportationAssign.routes"));
+app.use("/api/textbook-progress", require("./routes/textbookProgress.routes"));
 
 module.exports = app;
