@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const controller = require('../controllers/guardAttendance.controller');
-const { authenticate, authorize } = require('../middlewares/auth');
+const { authenticate, authorize } = require('../middlewares/auth.middleware');
 
 // CRUD
 router.post('/', authenticate, authorize(['GUARD']), controller.recordAttendance);

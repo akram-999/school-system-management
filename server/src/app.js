@@ -26,10 +26,14 @@ app.use("/api/attendance",require("./routes/guardAttendance.routes"));
 app.use("/api/exams", require("./routes/exam.routes"));
 app.use("/api/exam-results", require("./routes/examResult.routes"));
 app.use("/api/homework", require("./routes/homework.routes"));
-app.use("/api/transportations", require("./routes/transportation.routes"));
-app.use("/api/transportations/assignments", require("./routes/transportationAssign.routes"));
+app.use("/api/transportation", require("./routes/transportation.routes"));
+app.use("/api/transportation/assignments", require("./routes/transportationAssign.routes"));
 app.use("/api/textbook-progress", require("./routes/textbookProgress.routes"));
 app.use("/api/activities", require("./routes/activity.routes"));
 app.use("/api/dashboard", require("./routes/dashboard.routes"));
+app.use("/api/classAttendance",require("./routes/classAttendance.routes"));
+app.use("/api/guardAttendance",require("./routes/guardAttendance.routes"));
+
+
 
 module.exports = app;
