@@ -22,7 +22,7 @@ app.use("/api/cycles", require("./routes/cycle.routes"));
 app.use("/api/classes", require("./routes/class.routes"));
 app.use("/api/subjects", require("./routes/subject.routes"));
 app.use("/api/schedules", require("./routes/schedule.routes"));
-app.use("/api/attendance",require("./routes/attendance.routes"));
+app.use("/api/attendance",require("./routes/guardAttendance.routes"));
 app.use("/api/exams", require("./routes/exam.routes"));
 app.use("/api/exam-results", require("./routes/examResult.routes"));
 app.use("/api/homework", require("./routes/homework.routes"));

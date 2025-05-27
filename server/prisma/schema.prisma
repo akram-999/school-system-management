@@ -22,7 +22,6 @@ enum Role {
   TEACHER
   STUDENT
   PARENT
-  DRIVER
 }
 
 model User {
@@ -37,7 +36,6 @@ model User {
   schoolAdmin       SchoolAdmin?
   teacher           Teacher?
   guard             Guard?
-  driver            Driver?
   student           Student?
   parent            Parent?
 }
@@ -107,17 +105,20 @@ model Parent {
 }
 
 model Student {
-  id        String  @id
-  user      User    @relation(fields: [id], references: [id])
-  schoolId  String
-  school    School  @relation(fields: [schoolId], references: [id])
-
-  parentId  String?
-  parent    Parent? @relation(fields: [parentId], references: [id], name: "ParentChildren")
-
+  id           String  @id
+  user         User    @relation(fields: [id], references: [id])
+  schoolId     String
+  school       School  @relation(fields: [schoolId], references: [id])
+  firstName    String
+  lastName     String
+  firstName_ar String
+  lastName_ar  String
+  parentId     String?
+  parent       Parent? @relation(fields: [parentId], references: [id], name: "ParentChildren")
   classId   String?
   class     Class?  @relation(fields: [classId], references: [id])
 
+  transportations  Transportation[]   @relation("StudentTransportations", references: [id], through: StudentTransportation)
   schedules Schedule[]
   attendances Attendance[]
   homeworks   Homework[]
@@ -157,16 +158,22 @@ model Schedule {
 }
 
 model Attendance {
-  id         String   @id @default(uuid())
-  date       DateTime
-  status     String   // Present, Absent, Late, etc.
-  studentId  String?
-  student    Student? @relation(fields: [studentId], references: [id])
-  teacherId  String?
-  teacher    Teacher? @relation(fields: [teacherId], references: [id])
-  guardId    String?
-  guard      Guard?   @relation(fields: [guardId], references: [id])
+  id          String   @id @default(cuid())
+  student     Student? @relation(fields: [studentId], references: [id])
+  studentId   String?
+  staff       Staff?   @relation(fields: [staffId], references: [id])
+  staffId     String?
+  date        DateTime
+  status      String
+  recordedBy  String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([studentId, date])
+  @@unique([staffId, date])
 }
+
+
 
 model Transportation {
   id        String   @id @default(uuid())
@@ -176,7 +183,19 @@ model Transportation {
   driverId  String
   driver    Driver   @relation(fields: [driverId], references: [id])
   accompaniments Accompaniment[]
+  students         Student[]           @relation("StudentTransportations", references: [id], through: StudentTransportation)
 }
+
+model StudentTransportation {
+  studentId       String
+  transportationId String
+
+  student         Student         @relation(fields: [studentId], references: [id])
+  transportation  Transportation  @relation(fields: [transportationId], references: [id])
+
+  @@id([studentId, transportationId])
+}
+
 
 model Accompaniment {
   id              String   @id @default(uuid())
@@ -218,17 +237,37 @@ model Activity {
   id        String   @id @default(uuid())
   name      String
   date      DateTime
+  description String?
   location  String
   schoolId  String
   school    School @relation(fields: [schoolId], references: [id])
+  participants Student[] @relation("StudentActivities", references: [id], through: ActivityParticipant)
+
+}
+
+model ActivityParticipant {
+  activityId String
+  studentId  String
+
+  activity   Activity @relation(fields: [activityId], references: [id])
+  student    Student  @relation(fields: [studentId], references: [id])
+
+  @@id([activityId, studentId])
 }
 
 model TextbookProgress {
-  id        String   @id @default(uuid())
-  subject   String
-  progress  Int      // percentage
-  classId   String
-  class     Class    @relation(fields: [classId], references: [id])
-  teacherId String
-  teacher   Teacher  @relation(fields: [teacherId], references: [id])
+  id          String    @id @default(uuid())
+  classId     String
+  subjectId   String
+  teacherId   String
+  topic       String
+  date        DateTime  @default(now())
+  notes       String?
+
+  class       Class     @relation(fields: [classId], references: [id])
+  subject     Subject   @relation(fields: [subjectId], references: [id])
+  teacher     Teacher   @relation(fields: [teacherId], references: [id])
+
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
 }
