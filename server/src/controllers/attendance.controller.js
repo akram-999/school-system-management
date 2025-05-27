@@ -1,3 +1,4 @@
+const ExcelJS = require('exceljs');
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 
@@ -77,3 +78,54 @@ exports.deleteAttendance = async (req, res) => {
     res.status(500).json({ error: "Failed to delete attendance" });
   }
 };
+
+
+
+exports.exportAttendanceByClass = async (req, res) => {
+    const classId = req.params.classId;
+  
+    try {
+      const classInfo = await prisma.class.findUnique({
+        where: { id: classId },
+        include: {
+          students: {
+            include: {
+              attendances: true
+            }
+          }
+        }
+      });
+  
+      if (!classInfo || classInfo.students.length === 0) {
+        return res.status(404).json({ message: "No attendance data found." });
+      }
+  
+      const workbook = new ExcelJS.Workbook();
+      const worksheet = workbook.addWorksheet("Attendance");
+  
+      worksheet.columns = [
+        { header: "Student Name", key: "studentName", width: 25 },
+        { header: "Date", key: "date", width: 20 },
+        { header: "Status", key: "status", width: 15 }
+      ];
+  
+      classInfo.students.forEach(student => {
+        student.attendances.forEach(att => {
+          worksheet.addRow({
+            studentName: student.name,
+            date: new Date(att.date).toLocaleDateString(),
+            status: att.status
+          });
+        });
+      });
+  
+      res.setHeader("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+      res.setHeader("Content-Disposition", `attachment; filename=attendance-class-${classId}.xlsx`);
+  
+      await workbook.xlsx.write(res);
+      res.end();
+    } catch (error) {
+      console.error("Attendance export failed:", error);
+      res.status(500).json({ error: "Failed to export attendance data." });
+    }
+  };

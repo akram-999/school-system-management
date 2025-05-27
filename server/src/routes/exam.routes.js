@@ -15,5 +15,6 @@ router.post("/", authorizeRoles("ADMIN", "SCHOOL_ADMIN", "TEACHER"), createExam)
 router.get("/", authorizeRoles("ADMIN", "SCHOOL_ADMIN", "TEACHER", "GUARD", "STUDENT", "PARENT"), getExams);
 router.put("/:id", authorizeRoles("ADMIN", "SCHOOL_ADMIN"), updateExam);
 router.delete("/:id", authorizeRoles("ADMIN", "SCHOOL_ADMIN"), deleteExam);
+router.get("/export/class/:classId", authenticate, examController.exportExamResultsByClass);
 
 module.exports = examRouter;

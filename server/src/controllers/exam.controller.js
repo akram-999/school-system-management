@@ -1,6 +1,6 @@
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
-
+const ExcelJS = require('exceljs');
 // Create Exam
 exports.createExam = async (req, res) => {
   try {
@@ -79,3 +79,62 @@ exports.deleteExam = async (req, res) => {
     res.status(500).json({ error: "Failed to delete exam" });
   }
 };
+
+exports.exportExamResultsByClass = async (req, res) => {
+    const classId = req.params.classId;
+    const teacherId = req.user.id;
+  
+    try {
+      // Get exams for the class, validated by the teacher's ownership
+      const exams = await prisma.exam.findMany({
+        where: {
+          classId,
+          teacherId
+        },
+        include: {
+          examResults: {
+            include: {
+              student: true
+            }
+          },
+          subject: true
+        }
+      });
+  
+      if (exams.length === 0) {
+        return res.status(404).json({ message: "No exams found for this class." });
+      }
+  
+      const workbook = new ExcelJS.Workbook();
+      const worksheet = workbook.addWorksheet("Exam Results");
+  
+      // Header Row
+      worksheet.columns = [
+        { header: 'Exam Title', key: 'examTitle', width: 30 },
+        { header: 'Subject', key: 'subject', width: 20 },
+        { header: 'Student Name', key: 'studentName', width: 25 },
+        { header: 'Grade', key: 'grade', width: 10 }
+      ];
+  
+      exams.forEach(exam => {
+        exam.examResults.forEach(result => {
+          worksheet.addRow({
+            examTitle: exam.title,
+            subject: exam.subject.name,
+            studentName: result.student.name,
+            grade: result.grade
+          });
+        });
+      });
+  
+      // Prepare file stream
+      res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+      res.setHeader('Content-Disposition', `attachment; filename=class-${classId}-exam-results.xlsx`);
+  
+      await workbook.xlsx.write(res);
+      res.end();
+    } catch (err) {
+      console.error("Excel Export Error:", err);
+      res.status(500).json({ error: "Failed to export exam results." });
+    }
+  };

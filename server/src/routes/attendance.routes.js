@@ -15,5 +15,6 @@ router.post("/", authorizeRoles("GUARD", "TEACHER", "SCHOOL_ADMIN"), createAtten
 router.get("/", authorizeRoles("GUARD", "TEACHER", "SCHOOL_ADMIN"), getAttendances);
 router.put("/:id", authorizeRoles("GUARD", "TEACHER", "SCHOOL_ADMIN"), updateAttendance);
 router.delete("/:id", authorizeRoles("GUARD", "TEACHER", "SCHOOL_ADMIN"), deleteAttendance);
+router.get("/export/class/:classId", authenticate, authorize(["GUARD"]), attendance.controller.exportAttendanceByClass);
 
 module.exports = attendanceRouter;
