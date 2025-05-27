@@ -25,5 +25,6 @@ app.use("/api/schedules", require("./routes/schedule.routes"));
 app.use("/api/attendance",require("./routes/attendance.routes"));
 app.use("/api/exams", require("./routes/exam.routes"));
 app.use("/api/exam-results", require("./routes/examResult.routes"));
+app.use("/api/homework", require("./routes/homework.routes"));
 
 module.exports = app;
